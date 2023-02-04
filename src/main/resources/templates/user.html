@@ -25,13 +25,13 @@
     </thead>
     <tbody>
     <tr th:each="user:${user}">
-        <td><a th:href="@{/admin/{username}(username=${user.username})}" th:text="${user.id}"/></td>
+        <td> <a th:href="@{admin/{id}(id=${user.id})}" th:text="${user.id}"/></td>
         <td th:text="${user.username}"/>
         <td th:text="${user.password}"/>
         <td th:text="${user.email}"/>
         <td th:each="role: ${user.roles}" th:text="${role.name}"></td>
         <td>
-            <form th:method="POST" th:action="@{/admin/delete/{id}(id=${user.id})}">
+            <form th:method="DELETE" th:action="@{/admin/delete/{id}(id=${user.id})}">
                 <input type="submit" value="Удалить пользователя"/>
             </form>
         </td>

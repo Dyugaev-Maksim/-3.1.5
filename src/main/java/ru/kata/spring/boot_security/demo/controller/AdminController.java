@@ -8,7 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.entities.User;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
-import ru.kata.spring.boot_security.demo.services.UserService;
+import ru.kata.spring.boot_security.demo.services.UserServiceImp;
 
 import javax.validation.Valid;
 
@@ -17,28 +17,28 @@ import javax.validation.Valid;
 @RequestMapping("/admin")
 public class AdminController {
     public UserRepository userRepository;
-    UserService userService;
+    private UserServiceImp userServiceImp;
 
     public AdminController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     @Autowired
-    public void setUserService(UserService userService) {
-        this.userService = userService;
+    public void setUserService(UserServiceImp userServiceImp) {
+        this.userServiceImp = userServiceImp;
     }
 
     @GetMapping
     public String getAllUsersList(Model model) {
         model.addAttribute("something", "All User table");
-        model.addAttribute("user", userRepository.findAll());
+        model.addAttribute("user", userServiceImp.getAllUsers());
         return "user";
     }
 
-    @GetMapping("/{username}")
-    public String showUserById(@PathVariable("username") String username, Model model) {
+    @GetMapping("/{id}")
+    public String showUserById(@PathVariable("id") Long id, Model model) {
         model.addAttribute("something", "One User table");
-        model.addAttribute("user", userRepository.findByUsername(username));
+        model.addAttribute("user", userServiceImp.getUserById(id));
         return "one user";
     }
 
@@ -52,17 +52,17 @@ public class AdminController {
         if (result.hasErrors()) {
             return "new";
         }
-        userService.saveUser(user);
+        userServiceImp.saveUser(user);
         return "redirect:/admin";
     }
 
     @GetMapping("/{id}/edit")
     public String getPageToUpd(Model model, @PathVariable("id") long id) {
-        model.addAttribute("user", userRepository.getById(id));
+        model.addAttribute("user", userServiceImp.getUserById(id));
         return "edit";
     }
 
-    @PostMapping("/{id}")
+    @PatchMapping("/{id}")
     public String updateUser(@ModelAttribute("user") @Valid User user, BindingResult result) {
         if (result.hasErrors()) {
             return "edit";
@@ -71,9 +71,9 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    @PostMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public String deleteUser(@PathVariable("id") long id) {
-        userRepository.deleteById(id);
+        userServiceImp.deleteUserById(id);
         return "redirect:/admin";
     }
 }

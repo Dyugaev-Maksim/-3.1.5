@@ -7,7 +7,7 @@
         integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
 </head>
 <body>
-<form  th:action="@{/admin/{id}(id=${user.id})}" th:method="POST" th:object="${user}">
+<form  th:action="@{/admin/{id}(id=${user.id})}" th:method="Patch" th:object="${user}">
 
   <label for="username">Enter username:</label>
   <input type="text" th:field="*{username}" id="username"/>

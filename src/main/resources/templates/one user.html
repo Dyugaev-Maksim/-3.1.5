@@ -13,7 +13,7 @@
 <a th:href="@{/admin/{id}/edit(id=${user.id})}">Изменить пользователя</a> или
 <a href="/admin">Показать всю таблицу</a>
 <br/>
-<form th:method="POST" th:action="@{/admin/delete/{id}(id=${user.id})}">
+<form th:method="DELETE" th:action="@{/admin/delete/{id}(id=${user.id})}">
   <input type="submit" value="Удалить пользователя"/>
 </form>
 <table class="table table-dark">
