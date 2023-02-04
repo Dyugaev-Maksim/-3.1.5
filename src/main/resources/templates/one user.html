@@ -11,7 +11,7 @@
 <body>
 <h1 th:text="${something}"/>  <a href="/admin/new">Добавить пользователя</a> или
 <a th:href="@{/admin/{id}/edit(id=${user.id})}">Изменить пользователя</a> или
-<a href="/">Показать всю таблицу</a>
+<a href="/admin">Показать всю таблицу</a>
 <br/>
 <form th:method="POST" th:action="@{/admin/delete/{id}(id=${user.id})}">
   <input type="submit" value="Удалить пользователя"/>

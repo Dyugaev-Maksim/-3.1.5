@@ -14,12 +14,11 @@ import ru.kata.spring.boot_security.demo.entities.User;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private UserRepository userRepository;
 
     @Autowired
@@ -51,7 +50,6 @@ public class UserService implements UserDetailsService {
         if (userFromDB != null) {
             return false;
         }
-//        user.setRoles(Collections.singleton(new Role(1L, "ROLE_USER")));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         return true;

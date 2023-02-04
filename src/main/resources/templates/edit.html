@@ -13,9 +13,11 @@
   <input type="text" th:field="*{username}" id="username"/>
   <!--    <div style="color:red" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Error</div>-->
   <br/>
+  <br/>
   <label for="password">Enter password:</label>
   <input type="text" th:field="*{password}" id="password"/>
   <!--    <div style="color:red" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Error</div>-->
+  <br/>
   <br/>
   <label for="email">Enter email:</label>
   <input type="text" th:field="*{email}" id="email"/>
@@ -26,9 +28,8 @@
     <option th:value="'2'" th:text="ADMIN"></option>
     <option th:value="'1'" th:text="USER"></option>
   </select>
-  <!--    <div style="color:red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Error</div>-->
   <br/>
-
+  <br/>
   <input type="submit" value="Update!"/>
 </form>
 </body>

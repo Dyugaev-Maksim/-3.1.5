@@ -1,22 +1,47 @@
 package ru.kata.spring.boot_security.demo.entities;
 
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.Collection;
+import java.util.Objects;
 
 @Entity
 @Table(name = "users")
-public class User  {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Size(min = 2, max = 30, message = "Name must be longer than 30 and shorter than 2 symbols")
+    @NotEmpty(message = "Name should not be empty")
     private String username;
+
+    @NotEmpty(message = "Name should not be empty")
     private String password;
+    @Email
     private String email;
+    @NotEmpty
     @ManyToMany
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Collection<Role> roles;
+
+    public User(String username, String password, String email, Collection<Role> roles) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.roles = roles;
+    }
+
+    public User() {
+
+    }
 
     public Long getId() {
         return id;
@@ -32,6 +57,31 @@ public class User  {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return getRoles();
     }
 
     public String getPassword() {
@@ -56,5 +106,29 @@ public class User  {
 
     public void setRoles(Collection<Role> roles) {
         this.roles = roles;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", roles=" + roles +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(email, user.email) && Objects.equals(roles, user.roles);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username, password, email, roles);
     }
 }
