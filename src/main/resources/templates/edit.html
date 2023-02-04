@@ -21,6 +21,13 @@
   <input type="text" th:field="*{email}" id="email"/>
   <!--    <div style="color:red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Error</div>-->
   <br/>
+  <br/>
+  <select th:field="*{roles}">
+    <option th:value="'2'" th:text="ADMIN"></option>
+    <option th:value="'1'" th:text="USER"></option>
+  </select>
+  <!--    <div style="color:red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Error</div>-->
+  <br/>
 
   <input type="submit" value="Update!"/>
 </form>

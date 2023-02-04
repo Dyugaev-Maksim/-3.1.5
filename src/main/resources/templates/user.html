@@ -19,6 +19,7 @@
         <th scope="col">username</th>
         <th scope="col">password</th>
         <th scope="col">email</th>
+        <th scope="col">Role</th>
         <th scope="col">Delete User</th>
     </tr>
     </thead>
@@ -28,6 +29,7 @@
         <td th:text="${user.username}"/>
         <td th:text="${user.password}"/>
         <td th:text="${user.email}"/>
+        <td th:each="role: ${user.roles}" th:text="${role.name}"></td>
         <td>
             <form th:method="POST" th:action="@{/admin/delete/{id}(id=${user.id})}">
                 <input type="submit" value="Удалить пользователя"/>
