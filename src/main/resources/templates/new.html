@@ -24,9 +24,9 @@
     <div style="color:red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Error</div>
     <br/>
     <br/>
-    <select th:field="*{roles}" >
-        <option th:value="'1'" th:text="USER"></option>
-        <option th:value="'2'" th:text="ADMIN"></option>
+    <select th:field="*{roles}">
+        <option th:value="'1'" th:text="ADMIN"></option>
+        <option th:value="'2'" th:text="USER"></option>
     </select>
 
     <br/>

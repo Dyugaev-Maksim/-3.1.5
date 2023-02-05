@@ -7,7 +7,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.entities.User;
-import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 import ru.kata.spring.boot_security.demo.services.UserServiceImp;
 
 import javax.validation.Valid;
@@ -16,12 +15,7 @@ import javax.validation.Valid;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    public UserRepository userRepository;
     private UserServiceImp userServiceImp;
-
-    public AdminController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Autowired
     public void setUserService(UserServiceImp userServiceImp) {
@@ -32,14 +26,14 @@ public class AdminController {
     public String getAllUsersList(Model model) {
         model.addAttribute("something", "All User table");
         model.addAttribute("user", userServiceImp.getAllUsers());
-        return "user";
+        return "admin";
     }
 
     @GetMapping("/{id}")
     public String showUserById(@PathVariable("id") Long id, Model model) {
         model.addAttribute("something", "One User table");
         model.addAttribute("user", userServiceImp.getUserById(id));
-        return "one user";
+        return "adminoneuser";
     }
 
     @GetMapping("/new")
@@ -67,7 +61,7 @@ public class AdminController {
         if (result.hasErrors()) {
             return "edit";
         }
-        userRepository.save(user);
+        userServiceImp.updateUser(user);
         return "redirect:/admin";
     }
 

@@ -5,7 +5,9 @@ import ru.kata.spring.boot_security.demo.entities.User;
 import java.util.List;
 
 public interface UserService {
-    boolean saveUser(User user);
+    void saveUser(User user);
+
+    void updateUser(User user);
 
     List<User> getAllUsers();
 

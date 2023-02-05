@@ -1,6 +1,5 @@
 package ru.kata.spring.boot_security.demo.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +12,7 @@ import ru.kata.spring.boot_security.demo.entities.Role;
 import ru.kata.spring.boot_security.demo.entities.User;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
+import javax.persistence.EntityManager;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,13 +20,14 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class UserServiceImp implements UserDetailsService, UserService {
+    private EntityManager entityManager;
     private UserRepository userRepository;
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public void setUserRepository(UserRepository userRepository) {
+    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder, EntityManager entityManager) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.entityManager = entityManager;
     }
 
     public User findByUsername(String username) {
@@ -34,7 +35,6 @@ public class UserServiceImp implements UserDetailsService, UserService {
     }
 
     @Override
-    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = findByUsername(username);
         if (user == null) {
@@ -49,14 +49,21 @@ public class UserServiceImp implements UserDetailsService, UserService {
     }
 
     @Transactional
-    public boolean saveUser(User user) {
+    @Override
+    public void saveUser(User user) {
         User userFromDB = userRepository.findByUsername(user.getUsername());
         if (userFromDB != null) {
-            return false;
+            throw new NullPointerException(String.format("Пользователь в базе уже есть!"));
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
-        return true;
+    }
+
+    @Transactional
+    @Override
+    public void updateUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
     }
 
     @Override
@@ -72,6 +79,10 @@ public class UserServiceImp implements UserDetailsService, UserService {
 
     @Override
     public User getUserById(long id) {
-        return userRepository.getById(id);
+        User user = userRepository.getById(id);
+        if (user == null) {
+            throw new NullPointerException("User not found");
+        }
+        return user;
     }
 }
