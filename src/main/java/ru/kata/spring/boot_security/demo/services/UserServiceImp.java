@@ -20,14 +20,12 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class UserServiceImp implements UserDetailsService, UserService {
-    private EntityManager entityManager;
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
 
-    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder, EntityManager entityManager) {
+    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.entityManager = entityManager;
     }
 
     public User findByUsername(String username) {
@@ -51,10 +49,6 @@ public class UserServiceImp implements UserDetailsService, UserService {
     @Transactional
     @Override
     public void saveUser(User user) {
-        User userFromDB = userRepository.findByUsername(user.getUsername());
-        if (userFromDB != null) {
-            throw new NullPointerException(String.format("Пользователь в базе уже есть!"));
-        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
