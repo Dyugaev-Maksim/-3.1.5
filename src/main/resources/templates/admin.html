@@ -20,7 +20,8 @@
         <th scope="col">password</th>
         <th scope="col">email</th>
         <th scope="col">Role</th>
-        <th scope="col">Delete User</th>
+        <th scope="col">Edit</th>
+        <th scope="col">Delete</th>
     </tr>
     </thead>
     <tbody>
@@ -31,8 +32,11 @@
         <td th:text="${user.email}"/>
         <td th:each="role: ${user.roles}" th:text="${role.name}"></td>
         <td>
+            <a th:href="@{/admin/{id}/edit(id=${user.id})}" class="btn btn-primary">EDIT</a>
+        </td>
+        <td>
             <form th:method="DELETE" th:action="@{/admin/delete/{id}(id=${user.id})}">
-                <input type="submit" value="Удалить пользователя"/>
+                <input class="btn btn-primary" type="submit" value="DELETE">
             </form>
         </td>
     </tr>
