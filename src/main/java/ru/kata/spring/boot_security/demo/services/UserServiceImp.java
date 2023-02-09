@@ -12,7 +12,6 @@ import ru.kata.spring.boot_security.demo.entities.Role;
 import ru.kata.spring.boot_security.demo.entities.User;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
-import javax.persistence.EntityManager;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,15 +27,20 @@ public class UserServiceImp implements UserDetailsService, UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Override
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = findByUsername(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = findByEmail(email);
         if (user == null) {
-            throw new UsernameNotFoundException(String.format("Такого Юзера в таблице нет!", username));
+            throw new UsernameNotFoundException(String.format("Такого Юзера в таблице нет!", email));
         }
         return new org.springframework.security.core.userdetails.
                 User(user.getUsername(), user.getPassword(), mapRolesToAuthorities(user.getRoles()));
@@ -56,8 +60,13 @@ public class UserServiceImp implements UserDetailsService, UserService {
     @Transactional
     @Override
     public void updateUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+        User userInBd = userRepository.getById(user.getId());
+        if (user.getPassword().equals(userInBd.getPassword())) {
+            userRepository.saveAndFlush(user);
+        } else {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        userRepository.saveAndFlush(user);
     }
 
     @Override

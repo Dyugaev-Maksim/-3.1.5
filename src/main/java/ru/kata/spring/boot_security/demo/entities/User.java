@@ -5,9 +5,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -20,6 +19,11 @@ public class User implements UserDetails {
     @Size(min = 2, max = 30, message = "Name must be longer than 30 and shorter than 2 symbols")
     @NotEmpty(message = "Name should not be empty")
     private String username;
+    @Size(min = 2, max = 30, message = "Name must be longer than 30 and shorter than 2 symbols")
+    private String lastName;
+    @Min(value = 8, message = "User must be at least 8 years old.")
+    @Max(value = 120, message = "User must be under 120 years.")
+    private long age;
 
     @NotEmpty(message = "Name should not be empty")
     private String password;
@@ -35,11 +39,34 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String username, String password, String email, Set<Role> roles) {
+    public User(String username,String lastName, long age, String password, String email, Set<Role> roles ) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.roles = roles;
+        this.lastName = lastName;
+        this.age = age;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+    public String getSecondName() {
+        return lastName;
+    }
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+    public void setSecondName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public long getAge() {
+        return age;
+    }
+
+    public void setAge(long age) {
+        this.age = age;
     }
 
     public Long getId() {
@@ -53,8 +80,15 @@ public class User implements UserDetails {
     public String getUsername() {
         return username;
     }
+    public String getFirstname() {
+        return username;
+    }
+
 
     public void setUsername(String username) {
+        this.username = username;
+    }
+    public void setFirstname(String username) {
         this.username = username;
     }
 
@@ -100,9 +134,17 @@ public class User implements UserDetails {
     }
 
     public Set<Role> getRoles() {
-        return roles;
+        return (roles == null)
+                ? new HashSet<>()
+                : roles;
     }
 
+    public String rolesToString(){
+        StringBuilder rolesList = new StringBuilder();
+        this.getRoles()
+                .forEach(role -> rolesList.append(role).append(" "));
+        return rolesList.toString();
+    }
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }

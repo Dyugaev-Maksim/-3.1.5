@@ -7,67 +7,57 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.entities.User;
+import ru.kata.spring.boot_security.demo.repositories.UserRepository;
+import ru.kata.spring.boot_security.demo.services.RoleService;
+import ru.kata.spring.boot_security.demo.services.UserService;
 import ru.kata.spring.boot_security.demo.services.UserServiceImp;
 
 import javax.validation.Valid;
+import java.security.Principal;
 
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    private UserServiceImp userServiceImp;
+    private final UserService userservice;
+    private final RoleService roleService;
 
     @Autowired
-    public void setUserService(UserServiceImp userServiceImp) {
-        this.userServiceImp = userServiceImp;
+    public AdminController(UserService userservice, RoleService roleService) {
+        this.userservice = userservice;
+        this.roleService = roleService;
     }
 
+
     @GetMapping
-    public String getAllUsersList(Model model) {
-        model.addAttribute("something", "All User table");
-        model.addAttribute("user", userServiceImp.getAllUsers());
+    public String getAdminPanel(Model model, Principal principal) {
+        User user = userservice.findByUsername(principal.getName());
+        model.addAttribute("thisUser", user);
+        model.addAttribute("users", userservice.getAllUsers());
+        model.addAttribute("allRoles", roleService.getRolesSet());
+        model.addAttribute("newUser", new User());
         return "admin";
     }
 
-    @GetMapping("/{id}")
-    public String showUserById(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("something", "One User table");
-        model.addAttribute("user", userServiceImp.getUserById(id));
-        return "adminoneuser";
-    }
-
-    @GetMapping("/new")
-    public String getSavingPage(@ModelAttribute("user") User user) {
-        return "new";
-    }
-
-    @PostMapping()
-    public String saveNewUser(@ModelAttribute("user") @Valid User user, BindingResult result) {
-        if (result.hasErrors()) {
-            return "new";
-        }
-        userServiceImp.saveUser(user);
+    @PostMapping("/new")
+    public String saveNewUser(@ModelAttribute("newUser") User newUser,
+                              @RequestParam("roles") long[] roles) {
+        newUser.setRoles(roleService.getRolesById(roles));
+        userservice.saveUser(newUser);
         return "redirect:/admin";
-    }
-
-    @GetMapping("/{id}/edit")
-    public String getPageToUpd(Model model, @PathVariable("id") long id) {
-        model.addAttribute("user", userServiceImp.getUserById(id));
-        return "edit";
     }
 
     @PatchMapping("/{id}")
-    public String updateUser(@ModelAttribute("user") @Valid User user, BindingResult result) {
-        if (result.hasErrors()) {
-            return "edit";
-        }
-        userServiceImp.updateUser(user);
+    public String updateUser(@ModelAttribute("editUser") User user,
+                             @RequestParam("roles") long[] selectedRoles) {
+        user.setRoles(roleService.getRolesById(selectedRoles));
+        userservice.updateUser(user);
         return "redirect:/admin";
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public String deleteUser(@PathVariable("id") long id) {
-        userServiceImp.deleteUserById(id);
+        userservice.deleteUserById(id);
         return "redirect:/admin";
     }
 }
