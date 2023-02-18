@@ -1,24 +1,24 @@
 package ru.kata.spring.boot_security.demo.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "roles")
 public class Role implements GrantedAuthority {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "role_id")
+    @Column(name = "id")
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", unique = true)
     private String name;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "roles")
     private Set<User> users;
 
@@ -27,11 +27,6 @@ public class Role implements GrantedAuthority {
     }
 
     public Role(String name) {
-        this.name = name;
-    }
-
-    public Role(Long id, String name) {
-        this.id = id;
         this.name = name;
     }
 
@@ -52,9 +47,7 @@ public class Role implements GrantedAuthority {
     }
 
     public Set<User> getUsers() {
-        return (users == null)
-                ? new HashSet<>()
-                : users;
+        return users;
     }
 
     public void setUsers(Set<User> users) {
@@ -63,7 +56,7 @@ public class Role implements GrantedAuthority {
 
     @Override
     public String getAuthority() {
-        return getName();
+        return name;
     }
 
     @Override
@@ -80,7 +73,7 @@ public class Role implements GrantedAuthority {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, name);
     }
 
     @Override

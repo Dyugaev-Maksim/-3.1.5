@@ -4,16 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.entities.Role;
+import ru.kata.spring.boot_security.demo.entities.User;
 import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
-public class RoleServiceImp implements RoleService{
+public class RoleServiceImpl implements RoleService {
 
     private RoleRepository rolesRepository;
 
@@ -45,15 +45,10 @@ public class RoleServiceImp implements RoleService{
     }
 
     @Override
-    public Role findRoleById(Long id) {
-        return rolesRepository.getById(id);
+    public void setUserRoles(User user) {
+        user.setRoles(user.getRoles().stream()
+                .map(r -> findRoleByName(r.getName()))
+                .collect(Collectors.toSet()));
     }
 
-    @Override
-    public Set<Role> getRolesById(long[] selectedRoles) {
-        return Arrays
-                .stream(selectedRoles)
-                .mapToObj(this::findRoleById)
-                .collect(Collectors.toSet());
-    }
 }

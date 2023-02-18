@@ -4,35 +4,61 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.kata.spring.boot_security.demo.entities.Role;
 import ru.kata.spring.boot_security.demo.entities.User;
-import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
-import ru.kata.spring.boot_security.demo.services.UserServiceImp;
+import ru.kata.spring.boot_security.demo.services.RoleService;
+import ru.kata.spring.boot_security.demo.services.UserService;
 
 import javax.annotation.PostConstruct;
-import java.util.Collections;
+import javax.annotation.PreDestroy;
+import java.util.Set;
 
 @Component
 public class Init {
-    private final UserServiceImp userServiceImp;
-    private RoleRepository roleRepository;
+    private final UserService userService;
+    private final RoleService roleService;
 
     @Autowired
-    public void setRoleRepository(RoleRepository roleRepository) {
-        this.roleRepository = roleRepository;
-    }
-
-    public Init(UserServiceImp userServiceImp) {
-        this.userServiceImp = userServiceImp;
+    public Init(UserService userService, RoleService roleService) {
+        this.userService = userService;
+        this.roleService = roleService;
     }
 
     @PostConstruct
     private void postConstruct() {
-        Role roleuser = new Role("ROLE_USER");
-        Role roleadmin = new Role("ROLE_ADMIN");
-        roleRepository.save(roleadmin);
-        roleRepository.save(roleuser);
-        User admin = new User("admin", "adminLastName", 28, "admin","admin@mail.ru", Collections.singleton(new Role(1L, "ROLE_ADMIN")));
-        User user = new User("user", "userLastName", 28, "user","user@mail.ru", Collections.singleton(new Role(2L, "ROLE_USER")));
-        userServiceImp.saveUser(admin);
-        userServiceImp.saveUser(user);
+        String adminRole = "ROLE_ADMIN";
+        String userRole = "ROLE_USER";
+        Role admin = new Role(adminRole);
+        Role user = new Role(userRole);
+
+        roleService.save(admin);
+        roleService.save(user);
+
+        Role savedAdmin = roleService.findRoleByName(adminRole);
+        Role savedUser = roleService.findRoleByName(userRole);
+
+        User first = new User();
+
+        first.setUsername("admin@mail.com");
+        first.setPassword("admin");
+        first.setAge(23);
+        first.setFirstName("Jone");
+        first.setLastName("Stoyn");
+        first.setRoles(Set.of(savedAdmin, savedUser));
+        userService.saveUser(first);
+
+
+        User second = new User();
+        second.setUsername("user@mail.com");
+        second.setPassword("user");
+        second.setAge(28);
+        second.setFirstName("Katy");
+        second.setLastName("Parry");
+        second.setRoles(Set.of(savedUser));
+        userService.saveUser(second);
+    }
+
+    @PreDestroy
+    void preDestroy() {
+        userService.truncateTable();
+        roleService.truncateTable();
     }
 }
