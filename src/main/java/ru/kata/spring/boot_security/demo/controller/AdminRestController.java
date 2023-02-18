@@ -18,13 +18,13 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api")
-public class UserRestController {
+public class AdminRestController {
     private final UserService userService;
     private final UserValidator userValidator;
     private final RoleService roleService;
 
     @Autowired
-    public UserRestController(UserService userService, UserValidator userValidator, RoleService roleService) {
+    public AdminRestController(UserService userService, UserValidator userValidator, RoleService roleService) {
         this.userService = userService;
         this.userValidator = userValidator;
         this.roleService = roleService;
